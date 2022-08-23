@@ -1,13 +1,44 @@
-#!/usr/binenv ipy
+#!/usr/bin/env ipy
 # -*- coding: utf-8 -*-
-""" 
-Usage: build_module.py
 
+"""
 This script collects all python scripts (.py) from the project (including sub-folders) and compiles them into a dynamic link library (.dll) file. File will be placed inside the 'bin' folder. Place this file in the root directory of a project, prior to execution.
 
 Note:
-This script uses the Common Language Runtime Library (CLR). Use IronPython for execution.
-Download IronPython 2.7.9 from https://github.com/IronLanguages/ironpython2/releases/tag/ipy-2.7.9
+    This script uses the Common Language Runtime Library (CLR). Use IronPython for execution.
+    Download IronPython 2.7.9 from https://github.com/IronLanguages/ironpython2/releases/tag/ipy-2.7.9
+
+Usage:
+    build_module.py
+
+Author:
+    Kaushik LS - 18.08.2022
+
+Source:
+    https://gist.github.com/thekaushikls/58a0727a86fb2e74121a782e123d163e
+
+License:
+    MIT License
+
+    Copyright (c) 2022 Kaushik LS
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 """
 
 # - - - - - - - - IN-BUILT IMPORTS
@@ -33,16 +64,16 @@ class Compiler:
         """
         files = []
         # Ignore the current file, and files named '__init__.py'. Add other names if required.
-        ignore_list = (__file__, "__init__.py")
+        ignore_list = (os.path.basename(__file__), "__init__.py", "local", "bin")
 
         if os.path.isdir(folder_path):
             for file in os.listdir(folder_path):
                 abs_path = os.path.join(folder_path, file)
                 # ignore from ignore_list.
-                if not abs_path in ignore_list and file.endswith(".py"):
+                if not file in ignore_list and file.endswith(".py"):
                     files.append(abs_path)
                 # Recursiion for sub-folders
-                elif os.path.isdir(abs_path) and abs_path.lower() not in ignore_list:
+                elif os.path.isdir(abs_path) and file.lower() not in ignore_list:
                     files += Compiler.collect_files(abs_path)
         
         return files
