@@ -1,0 +1,42 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      package-name:
+        description: Name of the plugin / binary.
+        required: false
+        default: "BaseCamp"
+
+      version:
+        description: The release version tag to be included in the name.
+        required: true
+        default: v0.0.1-alpha
+
+jobs:
+  build:
+    runs-on: [windows-latest]
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    - name: Install IronPython
+      shell: pwsh
+      run: choco install ironpython --version=2.7.12
+    
+    - name: Build Plugin
+      id: build-plugin
+      uses: thekaushikls/make-ghpy
+      with:
+        source: basecamp
+        package-name: ${{ github.event.inputs.package-name }}
+        version: ${{ github.event.inputs.version }}
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ steps.build-plugin.outputs.name }}
+        path: ${{ steps.build-plugin.outputs.build }}
+        if-no-files-found: error
+        retention-days: 1
